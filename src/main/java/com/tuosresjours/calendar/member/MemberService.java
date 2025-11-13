@@ -1,6 +1,7 @@
 package com.tuosresjours.calendar.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,9 @@ public class MemberService {
     @Autowired
     MemberDao memberDao;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public int signupConfirm(MemberDto memberDto) {
         System.out.println("[MemberService] signupConfirm()");
 
@@ -20,7 +24,10 @@ public class MemberService {
 
         if (!isMember) {
 
+            String encodedPW = passwordEncoder.encode(memberDto.getPw());
+            memberDto.setPw(encodedPW);
             int insertResult = memberDao.insertMember(memberDto);
+            // 암호화
 
             if (insertResult > 0) {
                 return USER_SIGNUP_SUCCESS;
