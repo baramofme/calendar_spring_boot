@@ -16,14 +16,13 @@ public class MemberService {
     public int signupConfirm(MemberDto memberDto) {
         System.out.println("[MemberService] signupConfirm()");
 
-        String memberId = memberDto.getId();
-        boolean isMember = memberDao.isMember(memberId);
+        boolean isMember = memberDao.isMember(memberDto.getId());
 
         if (!isMember) {
 
             int insertResult = memberDao.insertMember(memberDto);
 
-            if (insertResult == 1) {
+            if (insertResult > 0) {
                 return USER_SIGNUP_SUCCESS;
             } else {
                 return USER_SIGNUP_FAIL;

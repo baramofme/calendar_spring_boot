@@ -18,7 +18,6 @@ public class MemberController {
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
-
     }
 
     // 회원 가입 양식
