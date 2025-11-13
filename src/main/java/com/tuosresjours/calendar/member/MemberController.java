@@ -44,4 +44,25 @@ public class MemberController {
         return nextPage;
 
     }
+
+    @GetMapping("/signin")
+    public String signin(Principal principal) {
+         System.out.println("[MemberController] signin()");
+         String nextPage = "member/signin_form";
+         return nextPage;
+    }
+
+    @PostMapping("/signin_confirm")
+    public String signinConfirm(MemberDto memberDto, Model model) {
+        System.out.println("[MemberController] signinConfirm()");
+
+        String nextPage = "member/signin_result";
+
+        String loginedID = memberService.signinConfirm(memberDto);
+        System.out.println(loginedID);
+        model.addAttribute("LoginedID", loginedID);
+
+        return nextPage;
+
+    }
 }

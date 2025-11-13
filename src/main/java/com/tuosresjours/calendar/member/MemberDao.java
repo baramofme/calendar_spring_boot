@@ -2,6 +2,7 @@ package com.tuosresjours.calendar.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -43,10 +44,10 @@ public class MemberDao {
         try {
             // 결과 : 추가된 행의 개수
             result = jdbcTemplate.update(sql,
-                                            memberDto.getId(),
-                                            memberDto.getPw(),
-                                            memberDto.getMail(),
-                                            memberDto.getPhone());
+                    memberDto.getId(),
+                    memberDto.getPw(),
+                    memberDto.getMail(),
+                    memberDto.getPhone());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,9 +55,33 @@ public class MemberDao {
         return result;
     }
 
-//    public MemberDto selectMemberByID(String id) {
-//         System.out.println("[MemberDao] selectMemberByID()");
-//        return "";
-//    }
+    public MemberDto selectMemberByID(String id) {
+        System.out.println("[MemberDao] selectMemberByID()");
+        String sql = "select * from USER_MEMBER where ID = ?";
+
+        List<MemberDto> memberDtos = new ArrayList<>();
+
+        try {
+            memberDtos = jdbcTemplate.query(sql, new RowMapper<MemberDto>() {
+                @Override
+                public MemberDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    MemberDto memberDto = new MemberDto();
+                    memberDto.setNo(rs.getInt("NO"));
+                    memberDto.setId(rs.getString("ID"));
+                    memberDto.setPw(rs.getString("PW"));
+                    memberDto.setMail(rs.getString("MAIL"));
+                    memberDto.setPhone(rs.getString("PHONE"));
+                    memberDto.setReg_date(rs.getString("REG_DATE"));
+                    memberDto.setMod_date(rs.getString("MOD_DATE"));
+
+                    return memberDto;
+                }
+            }, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return memberDtos.size() > 0 ? memberDtos.get(0) : null;
+    }
 
 }
