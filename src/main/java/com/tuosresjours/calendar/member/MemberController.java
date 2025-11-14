@@ -1,5 +1,6 @@
 package com.tuosresjours.calendar.member;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,7 +54,7 @@ public class MemberController {
     }
 
     @PostMapping("/signin_confirm")
-    public String signinConfirm(MemberDto memberDto, Model model) {
+    public String signinConfirm(MemberDto memberDto, Model model, HttpSession session) {
         System.out.println("[MemberController] signinConfirm()");
 
         String nextPage = "member/signin_result";
@@ -62,7 +63,20 @@ public class MemberController {
         System.out.println(loginedID);
         model.addAttribute("LoginedID", loginedID);
 
+        if(loginedID != null) {
+            session.setAttribute("loginedID", loginedID);
+        }
+
         return nextPage;
 
+    }
+
+    // 로그아웃확인
+    @GetMapping("/signout_confirm")
+    public String signoutConfirm(HttpSession session) {
+        System.out.println("[MemberController] logout()");
+        session.invalidate();
+        // 사용자에게 응답하는 대신, 서버의 다른 경로로 요청 방향을 바꾼다
+        return "redirect:/";
     }
 }
