@@ -24,7 +24,7 @@ public class MemberController {
     // 회원 가입 양식
     @GetMapping("/signup")
     public String signup() {
-         System.out.println("[MemberController] signup()");
+        System.out.println("[MemberController] signup()");
 
         String nextPage = "member/signup_form";
 
@@ -78,5 +78,24 @@ public class MemberController {
         session.invalidate();
         // 사용자에게 응답하는 대신, 서버의 다른 경로로 요청 방향을 바꾼다
         return "redirect:/";
+    }
+
+    @GetMapping("/modify")
+    public String modify(Model model, HttpSession session) {
+        System.out.println("[MemberController] modify()");
+
+        String loginedID = (String) session.getAttribute("loginedID");
+        MemberDto loginedMemberDto = memberService.modify(loginedID);
+
+        model.addAttribute("loginedMemberDto", loginedMemberDto);
+        return "member/modify_form";
+    }
+
+    @PostMapping("/modify_confirm")
+    public String modifyConfirm(MemberDto memberDto, Model model, HttpSession session) {
+        System.out.println("[MemberController] modifyConfirm()");
+        int result = memberService.modifyConfirm(memberDto);
+        model.addAttribute("result", result);
+        return "member/modify_result";
     }
 }

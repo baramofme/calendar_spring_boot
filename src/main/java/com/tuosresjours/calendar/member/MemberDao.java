@@ -17,8 +17,6 @@ public class MemberDao {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    Map<String, String> map = new HashMap<>();
-
     public boolean isMember(String id) {
         System.out.println("[MemberDao] isMember()");
 
@@ -84,4 +82,26 @@ public class MemberDao {
         return memberDtos.size() > 0 ? memberDtos.get(0) : null;
     }
 
+    public int updateMember(MemberDto memberDto) {
+        System.out.println("[MemberDao] updateMember()");
+        String sql = "UPDATE USER_MEMBER " +
+                "SET PW = ?" +
+                ", MAIL = ?" +
+                ", PHONE = ?" +
+                ", MOD_DATE = NOW()" +
+                " WHERE " +
+                "NO = ?";
+        int result = -1;
+        try{
+            result = jdbcTemplate.update(sql,
+                    memberDto.getPw(),
+                    memberDto.getMail(),
+                    memberDto.getPhone(),
+                    memberDto.getNo());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 }

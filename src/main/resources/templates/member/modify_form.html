@@ -28,6 +28,7 @@
                       name="modify_form"
                       method="post">
                     <input type="hidden" name="no" th:value="${loginedMemberDto.no}">
+                    <!-- disalbe 된 데이터는 서버로 전송되지 않는다. 그래서 사용자 식별 가능한 no 를 넘긴다 -->
                     <input type="text" name="id" th:value="${loginedMemberDto.id}" readonly disabled><br>
                     <input type="password" name="pw" placeholder="INPUT MEMBER PW"><br>
                     <input type="email" name="mail" th:value="${loginedMemberDto.mail}" placeholder="INPUT MEMBER MAIL"><br>
