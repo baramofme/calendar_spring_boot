@@ -73,3 +73,17 @@ function modifyForm() {
 
 }
 
+function findpasswordForm() {
+    console.log('findpasswordForm()');
+
+    let form = document.findpassword_form;
+    if (form.id.value === '') {
+        alert('INPUT NEW MEMBER ID!!');
+        form.id.focus();
+    } else if (form.mail.value === '') {
+        alert('INPUT NEW MEMBER MAIL!!');
+        form.mail.focus();
+    } else {
+        form.submit();
+    }
+}
