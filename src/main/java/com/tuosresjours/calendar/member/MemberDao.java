@@ -104,4 +104,57 @@ public class MemberDao {
 
         return result;
     }
+
+    public MemberDto selectMemberByIDAndMail(MemberDto memberDto) {
+        System.out.println("[MemberDao] selectMemberByIDAndMail()");
+
+        String sql = "SELECT * from USER_MEMBER " +
+                "WHERE ID = ? and MAIL = ?";
+
+        List<MemberDto> memberDtos = new ArrayList<>();
+        try {
+            memberDtos = jdbcTemplate.query(sql, new RowMapper<MemberDto>() {
+
+                @Override
+                public MemberDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    MemberDto memberDto = new MemberDto();
+                    memberDto.setNo(rs.getInt("NO"));
+                    memberDto.setId(rs.getString("ID"));
+                    memberDto.setPw(rs.getString("PW"));
+                    memberDto.setMail(rs.getString("MAIL"));
+                    memberDto.setPhone(rs.getString("PHONE"));
+                    memberDto.setReg_date(rs.getString("REG_DATE"));
+                    memberDto.setMod_date(rs.getString("MOD_DATE"));
+
+                    return memberDto;
+                }
+            }, memberDto.getId(), memberDto.getMail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return memberDtos.size() > 0 ? memberDtos.get(0) : null;
+    }
+
+    public int updatePassword(String id, String encodedNewPassword) {
+        System.out.println("[MemberDao] updatePassword()");
+
+        String sql = "UPDATE " +
+                        "USER_MEMBER " +
+                    "SET " +
+                        "PW = ?, " +
+                        "MOD_DATE = NOW() " +
+                    "WHERE " +
+                        "ID = ?";
+
+        int result = -1;
+        try {
+            result = jdbcTemplate.update(sql, encodedNewPassword, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
 }

@@ -98,4 +98,24 @@ public class MemberController {
         model.addAttribute("result", result);
         return "member/modify_result";
     }
+
+    @GetMapping("/findpassword")
+    public String findPassword() {
+        System.out.println("[MemberController] findPassword()");
+        String nextPage = "member/findpassword_form";
+        return nextPage;
+    }
+
+    @PostMapping("/findpassword_confirm")
+    public String findpasswordConfirm(MemberDto memberDto, Model model){
+        System.out.println("[MemberController] findpasswordConfirm()");
+        String nextPage = "member/findpassword_result";
+
+        int result = memberService.findpasswordConfirm(memberDto);
+        model.addAttribute("result", result);
+
+        return nextPage;
+    }
+
+
 }

@@ -1,9 +1,16 @@
 package com.tuosresjours.calendar.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+
 
 @Service
 public class MemberService {
@@ -12,11 +19,17 @@ public class MemberService {
     public final static int USER_SIGNUP_SUCCESS = 1;
     public final static int USER_SIGNUP_FAIL = -1;
 
+    @Value("${MAIL_SENDER}")
+    private String mailSender;
+
     @Autowired
     MemberDao memberDao;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    JavaMailSender javaMailSender;
 
     public int signupConfirm(MemberDto memberDto) {
         System.out.println("[MemberService] signupConfirm()");
@@ -65,5 +78,56 @@ public class MemberService {
         String encodedPW = passwordEncoder.encode(memberDto.getPw());
         memberDto.setPw(encodedPW);
         return memberDao.updateMember(memberDto);
+    }
+
+    public int findpasswordConfirm(MemberDto memberDto) {
+        System.out.println("[MemberService] findpasswordConfirm");
+        MemberDto selectedMemberDto = memberDao.selectMemberByIDAndMail(memberDto);
+
+        int result= 0;
+        if( selectedMemberDto != null ) {
+
+            String newPassword = createNewPassword();
+            result = memberDao.updatePassword(memberDto.getId(), passwordEncoder.encode(newPassword));
+
+            if(result > 0) {
+                sendNewPasswordByMail(memberDto.getMail(),newPassword);
+            }
+        }
+
+        return result;
+    }
+
+    private String createNewPassword() {
+        System.out.println( "[MemberService] createNewPassword()");
+
+        // 사용할 문자셋 (0-9, a-z)
+        String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            int index = random.nextInt(chars.length());
+            char c = chars.charAt(index);
+
+            if (i % 2 == 0) {
+                c = Character.toUpperCase(c);
+            }
+
+            password.append(c);
+        }
+        return password.toString();
+    }
+
+    private void sendNewPasswordByMail(String toMail, String newPassword) {
+        System.out.println( "[MemberService] sendNewPasswordByMail()");
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toMail);
+        message.setSubject("[MyCalendar] 새 비밀번호 안내입니다.");
+        message.setText("새 비밀번호 : " + newPassword);
+        message.setFrom(mailSender);
+
+        javaMailSender.send(message);
     }
 }
