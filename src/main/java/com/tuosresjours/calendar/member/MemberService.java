@@ -2,6 +2,7 @@ package com.tuosresjours.calendar.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.support.SimpleTriggerContext;
@@ -22,14 +23,18 @@ public class MemberService {
     @Value("${MAIL_SENDER}")
     private String mailSender;
 
-    @Autowired
-    MemberDao memberDao;
+    private final MemberDao memberDao;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
+
+//    @Autowired 생성자는 생략 가능
+    public MemberService(MemberDao memberDao, PasswordEncoder passwordEncoder, JavaMailSender javaMailSender){
+        this.memberDao = memberDao;
+        this.passwordEncoder = passwordEncoder;
+        this.javaMailSender = javaMailSender;
+    }
 
     public int signupConfirm(MemberDto memberDto) {
         System.out.println("[MemberService] signupConfirm()");

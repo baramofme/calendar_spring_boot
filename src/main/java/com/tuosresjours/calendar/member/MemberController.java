@@ -15,11 +15,19 @@ import java.security.Principal;
 @RequestMapping("/member")
 public class MemberController {
 
+    // membberService 가 불변이 유지되도록 주입 이후 외부 접근(private)과 변경(final)을 막기
     private final MemberService memberService;
 
+    // @Autowired 생성자는 Autowired 생략 가능
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
+
+    // 세터는 잘 사용하지 않음. 외부에서 세터를 재호출하면 객체 변경 가능
+//    @Autowired
+//    public void setMemberService(MemberService memberService){
+//        ...
+//    }
 
     // 회원 가입 양식
     @GetMapping("/signup")
